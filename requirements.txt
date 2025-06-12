@@ -1,9 +1,9 @@
 streamlit
-requests 
+requests
 Pillow
-os
-re
+fpdf2
 gspread
-fpdf
-datetime
-google.oauth2.service_account
+google-auth
+google-auth-oauthlib
+google-auth-httplib2
+oauth2client
