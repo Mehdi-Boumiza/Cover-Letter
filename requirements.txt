@@ -1,3 +1,9 @@
 streamlit
 requests 
 Pillow
+os
+re
+gspread
+fpdf
+datetime
+google.oauth2.service_account
