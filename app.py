@@ -1,5 +1,7 @@
 import streamlit as st
 import requests
+import os 
+
 
 st.set_page_config(page_title= "Cover Letter Generator",page_icon='logo.png', layout="centered")
 
@@ -16,10 +18,12 @@ with job_desc:
 st.write("")
 
 if st.button("Generate Cover Letter"):
-    if not resume_txt or not job_txt:
-        st.warning("Please fill in both requirements.")
-    else:
         with st.spinner("Generating Your Cover Letter ..."):
+            api_key = os.environ.get("GROQ_API_KEY")
+            headers = {
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json"
+            }
             prompt = f"""
     You are a professional career coach. Based on the resume and job description below, write a strong, customized cover letter for the user to apply for the job.
 
@@ -30,19 +34,24 @@ if st.button("Generate Cover Letter"):
     {job_desc}
 
     Cover Letter:
-    """
-            response = requests.post(
-                "http://localhost:11434/api/generate",
-                json={
-                    "model": "llama3",
-                    "prompt": prompt,
-                    "stream": False
-                }
-            )
-            result = response.json()
-            output = result.get("response", "Something Went Wrong. Please try again")
-            st.success("Done, Here's Your Cover Letter:")
-            st.text_area("Your Generated Cover Letter", output, height=300)
+    """            
+            data = {
+                "model" : "meta-llama/llama-4-scout-17b-16e-instruct",
+                "messages" : [
+                    {"role": "user", 'content': prompt}
+                ]
+
+            }
+            response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers = headers, json = data)
+            try: 
+                result = response.json()
+                output = result.get('choices', [{}])[0].get('message', {}).get('content', 'Something went wrong. Check logs.')
+            except Exception as e:
+                 output = f"ERROR: {e}"
+            st.success("DONE")
+            st.text_area("Your Generated Cover Letter", output , height = 300)
+
+
 
 st.markdown("---")
 st.markdown("<p style = 'text-align: center; color: gray;'>Built to help people fulfill their professional duties</p>", unsafe_allow_html=True)
