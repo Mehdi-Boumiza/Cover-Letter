@@ -15,7 +15,7 @@ scope = ["https://spreadsheets.google.com/feeds",
          "https://www.googleapis.com/auth/drive"]
 
 load_dotenv()
-service_account_info = json.loads(os.getenv["credentials"])
+service_account_info = json.loads(os.getenv("credentials"))
 groq_api_key = os.getenv("GROQ_API_KEY")
 creds = Credentials.from_service_account_info(service_account_info,scopes = scope)
 client = gspread.authorize(creds)
