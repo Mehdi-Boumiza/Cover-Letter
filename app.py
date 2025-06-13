@@ -6,13 +6,15 @@ import re
 from google.oauth2.service_account import Credentials
 import gspread
 from datetime import datetime
+import json
 
 scope = ["https://spreadsheets.google.com/feeds",
          "https://www.googleapis.com/auth/spreadsheets",
          "https://www.googleapis.com/auth/drive.file",
          "https://www.googleapis.com/auth/drive"]
 
-creds = Credentials.from_service_account_file("credentials.json", scopes = scope)
+service_account_info = json.loads(st.secrets["credentials"])
+creds = Credentials.from_service_account_info(service_account_info,scopes = scope)
 client = gspread.authorize(creds)
 
 sheet = client.open("cover").sheet1
@@ -51,11 +53,11 @@ st.write("")
 if st.button("Generate Cover Letter"):
         if not valid_email(email):
             st.warning("Please Enter a valid email address.")
-        elif not resume or not job_desc:
+        elif not resume_txt or not job_txt:
             st.warning("Please Enter your resume and the job description.")
         else: 
             with st.spinner("Generating Your Cover Letter ..."):
-                api_key = os.environ.get("GROQ_API_KEY")
+                api_key = st.secrets["GROQ_API_KEY"]
                 headers = {
                     "Authorization": f"Bearer {api_key}",
                     "Content-Type": "application/json"
@@ -73,10 +75,8 @@ if st.button("Generate Cover Letter"):
         """            
                 data = {
                     "model" : "meta-llama/llama-4-scout-17b-16e-instruct",
-                    "messages" : [
-                        {"role": "user", 'content': prompt}
-                    ]
-
+                    "messages" : [{"role": "user", 'content': prompt}],
+                    "max_tokens": 1024    
                 }
                 response = requests.post("https://api.groq.com/openai/v1/chat/completions", headers = headers, json = data)
                 try: 
