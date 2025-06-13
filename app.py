@@ -7,13 +7,16 @@ from google.oauth2.service_account import Credentials
 import gspread
 from datetime import datetime
 import json
+from dotenv import load_dotenv
 
 scope = ["https://spreadsheets.google.com/feeds",
          "https://www.googleapis.com/auth/spreadsheets",
          "https://www.googleapis.com/auth/drive.file",
          "https://www.googleapis.com/auth/drive"]
 
-service_account_info = json.loads(st.secrets["credentials"])
+load_dotenv()
+service_account_info = json.loads(os.getenv["credentials"])
+groq_api_key = os.getenv("GROQ_API_KEY")
 creds = Credentials.from_service_account_info(service_account_info,scopes = scope)
 client = gspread.authorize(creds)
 
@@ -59,7 +62,7 @@ if st.button("Generate Cover Letter"):
             with st.spinner("Generating Your Cover Letter ..."):
                 api_key = st.secrets["GROQ_API_KEY"]
                 headers = {
-                    "Authorization": f"Bearer {api_key}",
+                    "Authorization": f"Bearer {groq_api_key}",
                     "Content-Type": "application/json"
                 }
                 prompt = f"""
