@@ -8,6 +8,8 @@ import gspread
 from datetime import datetime
 import json
 from dotenv import load_dotenv
+from google.oauth2 import service_account
+
 
 scope = ["https://spreadsheets.google.com/feeds",
          "https://www.googleapis.com/auth/spreadsheets",
@@ -16,7 +18,7 @@ scope = ["https://spreadsheets.google.com/feeds",
 
 load_dotenv()
 service_account_info = st.secrets["credentials"]
-groq_api_key = st.secrets("GROQ_API_KEY")
+groq_api_key = st.secrets["GROQ_API_KEY"]
 creds = service_account.Credentials.from_service_account_info(service_account_info,scopes = scope)
 client = gspread.authorize(creds)
 
